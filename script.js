@@ -34,6 +34,7 @@ student_array = [
 */
 function initializeApp() {
       addClickHandlersToElements();
+      makeAjaxCallRead();
       updateStudentList(student_array);
 
 }
@@ -47,7 +48,7 @@ function initializeApp() {
 function addClickHandlersToElements() {
       $('#add').click(handleAddClicked);
       $('#cancel').click(handleCancelClick);
-      $('#getData').click(makeAjaxCall);
+      $('#getData').click(makeAjaxCallRead);
 }
 
 /***************************************************************************************************
@@ -60,7 +61,8 @@ function addClickHandlersToElements() {
 /////*****unsure of what to pass in as parameter */
 function handleAddClicked(event) {
       addStudent();
-      updateStudentList(student_array);
+      makeAjaxCallRead();
+      //updateStudentList(student_array);
 }
 /***************************************************************************************************
  * handleCancelClicked - Event Handler when user clicks the cancel button, should clear out student form
@@ -81,10 +83,11 @@ function addStudent() {
       var studentObj = {
             name: $('#studentName').val(),
             course: $('#course').val(),
-            grade: $('#studentGrade').val()
+            grade: $('#studentGrade').val(),
+
       };
       clearAddStudentFormInputs();
-      student_array.push(studentObj);
+      makeAjaxCallCreate(studentObj);
       updateStudentList(student_array);
 
 }
@@ -178,24 +181,61 @@ function deleteStudent(i) {
 }
 
 
-function makeAjaxCall() {
+function makeAjaxCallRead() {
       var ajaxOptions = {
             dataType: 'json',
             url: "http://s-apis.learningfuze.com/sgt/get",
             method: 'post',
-            success: getData,
+            success: readSuccess,
             data: { api_key: "3cFqeNuDaq" }
       }
 
       $.ajax(ajaxOptions);
 }
 
-function getData(response) {
-      console.log(response);
+function makeAjaxCallCreate(studentObj) {
+      var ajaxOptions = {
+            dataType: 'json',
+            url: "http://s-apis.learningfuze.com/sgt/create",
+            method: 'post',
+            success: createSuccess,
+            data: {
+                  api_key: "3cFqeNuDaq",
+                  name: studentObj.name,
+                  course: studentObj.course,
+                  grade: studentObj.grade
+            }
 
-      for (i = 0; i < response.data.length; i++) {
-            student_array.push(response.data[i]);
-            updateStudentList(student_array);
       }
+      $.ajax(ajaxOptions);
+
+}
+
+function makeAjaxCallDelete(studentObj) {
+      var ajaxOptions = {
+            dataType: 'json',
+            url: "s-apis.learningfuze.com/sgt/delete",
+            method: 'post',
+            success: createSuccess,
+            data: {
+                  api_key: "3cFqeNuDaq",
+                  name: studentObj.name,
+                  course: studentObj.course,
+                  grade: studentObj.grade
+            }
+
+      }
+      $.ajax(ajaxOptions);
+
+}
+
+function readSuccess(response) {
+      student_array = response.data;
+      updateStudentList(student_array);
+
+}
+
+function createSuccess(response) {
+      makeAjaxCallRead();
 }
 
