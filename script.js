@@ -36,6 +36,7 @@ function initializeApp() {
       addClickHandlersToElements();
       makeAjaxCallRead();
       updateStudentList(student_array);
+      $('i').hide();
 
 }
 
@@ -62,7 +63,6 @@ function addClickHandlersToElements() {
 function handleAddClicked(event) {
       addStudent();
       makeAjaxCallRead();
-      //updateStudentList(student_array);
 }
 /***************************************************************************************************
  * handleCancelClicked - Event Handler when user clicks the cancel button, should clear out student form
@@ -110,16 +110,15 @@ function renderStudentOnDom(studentObj, student) {
       var studentName = $('<td>').text(studentObj.name);
       var studentCourse = $('<td>').text(studentObj.course);
       var studentGrade = $('<td>').text(studentObj.grade);
-      var deleteButton = $('<button>').addClass('btn btn-danger').text('Delete');
+      var deleteButton = $('<button>').addClass('btn btn-danger delete-row').text('Delete');
       var buttonContainer = createTableElement.append(deleteButton);
       createTableRow.append(studentName, studentCourse, studentGrade);
       createTableRow.append(buttonContainer);
 
       $(buttonContainer).click(function () {
-            deleteStudent(student);
+            makeAjaxCallDelete(studentObj, studentObj.id);
+            makeAjaxCallRead();
       });
-
-
       $('tbody').append(createTableRow);
 }
 
@@ -174,19 +173,13 @@ function renderGradeAverage(number) {
       }
 }
 
-
-function deleteStudent(i) {
-      student_array.splice(i, 1);
-      updateStudentList(student_array);
-}
-
-
 function makeAjaxCallRead() {
       var ajaxOptions = {
             dataType: 'json',
             url: "http://s-apis.learningfuze.com/sgt/get",
             method: 'post',
             success: readSuccess,
+            error: errorMessage,
             data: { api_key: "3cFqeNuDaq" }
       }
 
@@ -199,43 +192,51 @@ function makeAjaxCallCreate(studentObj) {
             url: "http://s-apis.learningfuze.com/sgt/create",
             method: 'post',
             success: createSuccess,
+            error: errorMessage,
             data: {
                   api_key: "3cFqeNuDaq",
                   name: studentObj.name,
                   course: studentObj.course,
                   grade: studentObj.grade
             }
-
       }
       $.ajax(ajaxOptions);
 
 }
 
-function makeAjaxCallDelete(studentObj) {
+function makeAjaxCallDelete(studentObj, id) {
+      console.log('delete called');
       var ajaxOptions = {
             dataType: 'json',
-            url: "s-apis.learningfuze.com/sgt/delete",
+            url: "http://s-apis.learningfuze.com/sgt/delete",
             method: 'post',
-            success: createSuccess,
             data: {
                   api_key: "3cFqeNuDaq",
-                  name: studentObj.name,
-                  course: studentObj.course,
-                  grade: studentObj.grade
-            }
-
+                  student_id: id
+            },
+            success: deleteSucess,
+            error: errorMessage,
       }
       $.ajax(ajaxOptions);
-
 }
 
 function readSuccess(response) {
       student_array = response.data;
       updateStudentList(student_array);
-
 }
 
 function createSuccess(response) {
       makeAjaxCallRead();
 }
 
+function deleteSucess(studentObj, id) {
+      var index = student_array.indexOf(studentObj);
+      student_array.splice(index, 1);
+      $('tbody').empty();
+      updateStudentList(student_array);
+}
+
+function errorMessage() {
+      console.log('error');
+      $('#errorModal').modal('show');
+}
