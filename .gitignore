@@ -1,3 +1,7 @@
 .DS_Store
+<<<<<<< HEAD
 .idea
 README.md
+=======
+mysql_connect.php
+>>>>>>> d16227e7a617d4ec422a9e05d4f449a634424c37
