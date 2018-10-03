@@ -58,8 +58,7 @@ function renderStudentOnDom(studentObj, student) {
       createTableRow.append(buttonContainer);
 
       $(deleteButton).click(function () {
-            makeAjaxCallDelete(studentObj, studentObj.id);
-            makeAjaxCallRead();
+            deleteModal(studentObj, studentObj.id);
       });
 
       $(editButton).click(function () {
@@ -116,6 +115,11 @@ function makeAjaxCallRead() {
       $.ajax(ajaxOptions);
 }
 
+function readSuccess(response) {
+      student_array = response.data;
+      updateStudentList(student_array);
+}
+
 function makeAjaxCallCreate(studentObj) {
       var ajaxOptions = {
             dataType: 'json',
@@ -133,8 +137,11 @@ function makeAjaxCallCreate(studentObj) {
       $.ajax(ajaxOptions);
 }
 
+function createSuccess() {
+      makeAjaxCallRead();
+}
+
 function makeAjaxCallUpdate(studentObj, id) {
-      console.log('id in makeAjaxCallUpdate: ', id);
       var ajaxOptions = {
             dataType: 'json',
             url: "php/access.php",
@@ -150,8 +157,6 @@ function makeAjaxCallUpdate(studentObj, id) {
 }
 
 function updateRecord(id) {
-      console.log('id in updateRecord: ', id);
-
       var editObj = {
             name: $('#editName').val(),
             course_name: $('#editCourse').val(),
@@ -175,37 +180,6 @@ function updateRecord(id) {
       $.ajax(ajaxOptions);
 }
 
-function makeAjaxCallDelete(studentObj, id) {
-      var ajaxOptions = {
-            dataType: 'json',
-            url: "php/access.php",
-            method: 'post',
-            data: {
-                  student_id: id,
-                  action: 'delete'
-            },
-            success: deleteSucess,
-            error: errorMessage,
-      }
-      $.ajax(ajaxOptions);
-}
-
-function readSuccess(response) {
-      student_array = response.data;
-      updateStudentList(student_array);
-}
-
-function createSuccess() {
-      makeAjaxCallRead();
-}
-
-function deleteSucess(studentObj, id) {
-      var index = student_array.indexOf(studentObj);
-      student_array.splice(index, 1);
-      $('tbody').empty();
-      makeAjaxCallRead();
-}
-
 function editDataSuccess(response) {
       $('#editModal').modal('show');
       $('#editName').val(response.data[0].name);
@@ -220,6 +194,40 @@ function editDataSuccess(response) {
 function editSuccess(response) {
       makeAjaxCallRead();
 }
+
+function makeAjaxCallDelete(studentObj, id) {
+      console.log('object: ', studentObj);
+      var ajaxOptions = {
+            dataType: 'json',
+            url: "php/access.php",
+            method: 'post',
+            data: {
+                  student_id: id,
+                  action: 'delete'
+            },
+            success: deleteSuccess,
+            error: errorMessage,
+      }
+      $.ajax(ajaxOptions);
+}
+
+function deleteModal(studentObj, id) {
+      $('#deleteModal').modal('show');
+      $('#deleteName').text(studentObj.name);
+      $('#deleteCourse').text(studentObj.course_name);
+      $('#deleteGrade').text(studentObj.grade);
+      $('#delete').off();
+      $('#delete').click(() => makeAjaxCallDelete(studentObj, id));
+}
+
+function deleteSuccess(studentObj, id) {
+      var index = student_array.indexOf(studentObj);
+      student_array.splice(index, 1);
+      $('tbody').empty();
+      makeAjaxCallRead();
+}
+
+
 
 function errorMessage() {
       console.log('error');
