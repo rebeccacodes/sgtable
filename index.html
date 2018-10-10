@@ -9,17 +9,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
     <meta name="viewport" content="initial-scale=1, user-scalable=no">
-    <style>
-        #errorModalTitle {
-            font-weight: bold;
-            text-align: center;
-        }
 
-        .fa {
-            margin-left: -8px;
-            margin-right: 4px;
-        }
-    </style>
 </head>
 
 <body>
@@ -40,27 +30,35 @@
             </h3>
         </div>
         <div class="student-add-form col-xs-12 col-md-4 col-md-push-8">
-            <h4>Add Student</h4>
-            <div class="form-group input-group">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-user"></span>
-                </span>
-                <input type="text" class="form-control pull-right" name="studentName" id="studentName" placeholder="Student Name">
-            </div>
-            <div class="form-group input-group">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-list-alt"></span>
-                </span>
-                <input type="text" class="form-control" name="course" id="course" placeholder="Student Course">
-            </div>
-            <div class="form-group input-group">
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-education"></span>
-                </span>
-                <input type="text" class="form-control" name="studentGrade" id="studentGrade" placeholder="Student Grade">
-            </div>
-            <button type="button" id="add" class="btn btn-success buttonload">
-                <i class="fa fa-refresh fa-spin"></i>Add</button>
+            <form name="addForm">
+                <h4>Add Student</h4>
+                <div class="name-error"></div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-user"></span>
+                    </span>
+                    <input type="text" class="form-control pull-right" name="studentName" id="studentName" placeholder="Student Name"
+                        required>
+                </div>
+                <div class="course-error"></div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                    </span>
+                    <input type="text" class="form-control" name="course" id="course" placeholder="Student Course"
+                        required>
+                </div>
+                <div class="grade-error"></div>
+                <div class="form-group input-group">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-education"></span>
+                    </span>
+                    <input type="text" class="form-control" name="studentGrade" id="studentGrade" placeholder="Student Grade"
+                        required>
+                </div>
+                <button type="button" id="add" class="btn btn-success buttonload">
+                    <i class="fa fa-refresh fa-spin"></i>Add</button>
+            </form>
             <button type="button" id="cancel" class="btn btn-default">Cancel</button>
             <button type="button" id="getData" class="btn btn-info buttonload">
                 <i class="fa fa-refresh fa-spin"></i>Get Data from Server</button>

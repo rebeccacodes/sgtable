@@ -18,8 +18,8 @@ function addClickHandlersToElements() {
 }
 
 function handleAddClicked(event) {
-      addStudent();
-      makeAjaxCallRead();
+      validateForm();
+
 }
 
 function handleCancelClick() {
@@ -43,6 +43,14 @@ function clearAddStudentFormInputs() {
       $('#studentName').val('');
       $('#course').val('');
       $('#studentGrade').val('');
+      $('#studentName').removeClass('valid invalid');
+      $('#course').removeClass('valid invalid');
+      $('#studentGrade').removeClass('valid invalid');
+
+      $('.name-error').html('');
+      $('.course-error').html('');
+      $('.grade-error').html('');
+
 }
 
 function renderStudentOnDom(studentObj, student) {
@@ -232,4 +240,49 @@ function deleteSuccess(studentObj, id) {
 function errorMessage() {
       console.log('error');
       $('#errorModal').modal('show');
+}
+
+function validateForm() {
+      var regCheckLetters = /^[a-zA-Z\s]+$/g;
+      var regCheckLetterNumber = /^[a-zA-Z0-9\s]+$/g;
+      var regCheckGrade = /^([0-9]|[1-9][0-9]|100)$/g;
+
+      var validateName = document.forms["addForm"]["studentName"].value;
+      var validateCourse = document.forms["addForm"]["course"].value;
+      var validateGrade = document.forms["addForm"]["studentGrade"].value;
+
+      if (regCheckLetters.test(validateName)) {
+            $('#studentName').addClass('valid');
+            if (regCheckLetterNumber.test(validateCourse)) {
+                  $('#course').addClass('valid');
+                  if (regCheckGrade.test(validateGrade)) {
+                        $('#studentGrade').addClass('valid');
+                        addStudent();
+                        makeAjaxCallRead();
+                  } else if (validateGrade === "") {
+                        $('#studentGrade').addClass('invalid');
+                        $('.grade-error').append('Grade cannot be left blank');
+
+                  } else {
+                        $('#studentGrade').addClass('invalid');
+                        $('.grade-error').append('Grade must be a numeric value between 0 - 100');
+
+                  }
+            } else if (validateCourse === "") {
+                  $('#course').addClass('invalid');
+                  $('.course-error').append('Course name required');
+            } else {
+                  $('#course').addClass('invalid');
+                  $('.course-error').append('Course Name cannot include any special characters');
+            }
+
+      } else if (validateName === "") {
+            $('#studentName').addClass('invalid');
+            $('.name-error').append('Student Name is required');
+      } else {
+            $('#studentName').addClass('invalid');
+            $('.name-error').append('Student Name cannot contain numbers or special characters');
+      }
+
+
 }
