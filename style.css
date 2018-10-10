@@ -1,3 +1,35 @@
 .edit-btn {
     margin-right: 10px;
 }
+
+#errorModalTitle {
+    font-weight: bold;
+    text-align: center;
+}
+
+.fa {
+    margin-left: -8px;
+    margin-right: 4px;
+}
+
+.valid {
+    border-color: green;
+    border-width: 2px;
+}
+
+.invalid {
+    border-color: red;
+    border-width: 2px;
+}
+
+.name-error,
+.grade-error,
+.course-error {
+    color: red;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#add {
+    margin-bottom: 5px;
+}
