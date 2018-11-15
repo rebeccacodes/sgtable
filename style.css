@@ -30,6 +30,19 @@
     font-weight: bold;
 }
 
-#add {
+.edit-name-error,
+.edit-grade-error,
+.edit-course-error {
+    color: red;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+#add, #cancel {
     margin-bottom: 5px;
+}
+
+.center {
+    margin-left: 5px;
 }

@@ -14,7 +14,6 @@ function addClickHandlersToElements() {
       $('#add').click(handleAddClicked);
       $('#cancel').click(handleCancelClick);
       $('#getData').click(makeAjaxCallRead);
-
 }
 
 function handleAddClicked(event) {
@@ -27,10 +26,15 @@ function handleCancelClick() {
 }
 
 function addStudent() {
+      var studentName = $('#studentName').val();
+      var studentCourse = $('#course').val();
+      var studentGrade = $('#studentGrade').val();
+      var name = $.trim(studentName);
+      console.log(name, ':name');
       var studentObj = {
-            name: $('#studentName').val(),
-            course_name: $('#course').val(),
-            grade: $('#studentGrade').val(),
+            name: name,
+            course_name: studentCourse,
+            grade: studentGrade
 
       };
       clearAddStudentFormInputs();
@@ -46,7 +50,6 @@ function clearAddStudentFormInputs() {
       $('#studentName').removeClass('valid invalid');
       $('#course').removeClass('valid invalid');
       $('#studentGrade').removeClass('valid invalid');
-
       $('.name-error').html('');
       $('.course-error').html('');
       $('.grade-error').html('');
@@ -59,8 +62,13 @@ function renderStudentOnDom(studentObj, student) {
       var studentName = $('<td>').text(studentObj.name);
       var studentCourse = $('<td>').text(studentObj.course_name);
       var studentGrade = $('<td>').text(studentObj.grade);
-      var deleteButton = $('<button>').addClass('btn btn-danger delete-row').text('Delete');
-      var editButton = $('<button>').addClass('btn btn-warning edit-btn').text('Edit');
+      var editIcon = $('<i class="fa fa-pencil center">');
+      var deleteIcon = $('<i class="fa fa-trash center">');
+      var deleteButton = $('<button>').addClass('btn btn-danger delete-row');
+      var editButton = $('<button>').addClass('btn btn-warning edit-btn');
+
+      editButton.append(editIcon);
+      deleteButton.append(deleteIcon);
       var buttonContainer = createTableElement.append(editButton, deleteButton);
       createTableRow.append(studentName, studentCourse, studentGrade);
       createTableRow.append(buttonContainer);
@@ -195,16 +203,30 @@ function editDataSuccess(response) {
       $('#editGrade').val(response.data[0].grade);
       var id = response.data[0].id;
       $('#update').off();
-      $('#update').click(() => updateRecord(id));
+      $('#update').click(() => validateUpdate(id));
 
 }
 
 function editSuccess(response) {
       makeAjaxCallRead();
+      removeFormatting();
+      $('#editModal').modal('hide');
+}
+
+function removeFormatting() {
+      $('#editName').removeClass('invalid');
+      $('#editCourse').removeClass('invalid');
+      $('#editGrade').removeClass('invalid');
+      $('#editName').removeClass('valid');
+      $('#editCourse').removeClass('valid');
+      $('#editGrade').removeClass('valid');
+      $('.edit-name-error').empty();
+      $('.edit-course-error').empty();
+      $('.edit-grade-error').empty();
+
 }
 
 function makeAjaxCallDelete(studentObj, id) {
-      console.log('object: ', studentObj);
       var ajaxOptions = {
             dataType: 'json',
             url: "php/access.php",
@@ -248,41 +270,129 @@ function validateForm() {
       var regCheckGrade = /^([0-9]|[1-9][0-9]|100)$/g;
 
       var validateName = document.forms["addForm"]["studentName"].value;
+      validateName = validateName.trim();
       var validateCourse = document.forms["addForm"]["course"].value;
+      validateCourse = validateCourse.trim();
       var validateGrade = document.forms["addForm"]["studentGrade"].value;
 
       if (regCheckLetters.test(validateName)) {
+            $('#studentName').removeClass('invalid');
+            $('.name-error').empty();
             $('#studentName').addClass('valid');
             if (regCheckLetterNumber.test(validateCourse)) {
+                  $('#course').removeClass('invalid');
+                  $('.course-error').empty();
                   $('#course').addClass('valid');
                   if (regCheckGrade.test(validateGrade)) {
+                        $('#studentGrade').removeClass('invalid');
+                        $('.grade-error').empty();
                         $('#studentGrade').addClass('valid');
                         addStudent();
                         makeAjaxCallRead();
                   } else if (validateGrade === "") {
+                        $('.grade-error').empty();
                         $('#studentGrade').addClass('invalid');
                         $('.grade-error').append('Grade cannot be left blank');
+                        return;
 
                   } else {
+                        $('.grade-error').empty();
                         $('#studentGrade').addClass('invalid');
                         $('.grade-error').append('Grade must be a numeric value between 0 - 100');
+                        return;
 
                   }
-            } else if (validateCourse === "") {
+            } else if (validateCourse === "" || validateCourse.trim() === "") {
+                  $('.course-error').empty();
                   $('#course').addClass('invalid');
                   $('.course-error').append('Course name required');
+                  return;
             } else {
+                  $('.course-error').empty();
                   $('#course').addClass('invalid');
                   $('.course-error').append('Course Name cannot include any special characters');
+                  return;
             }
 
-      } else if (validateName === "") {
+      } else if (validateName.trim() == null || validateName === " " || validateName.trim() === "") {
+            $('.name-error').empty();
             $('#studentName').addClass('invalid');
             $('.name-error').append('Student Name is required');
+            return;
       } else {
+            $('.name-error').empty();
             $('#studentName').addClass('invalid');
             $('.name-error').append('Student Name cannot contain numbers or special characters');
+            return;
       }
 
 
 }
+
+function validateUpdate(id) {
+      var regCheckLetters = /^[a-zA-Z\s]+$/g;
+      var regCheckLetterNumber = /^[a-zA-Z0-9\s]+$/g;
+      var regCheckGrade = /^([0-9]|[1-9][0-9]|100)$/g;
+
+      var validateName = document.forms["editForm"]["studentName"].value;
+      validateName = validateName.trim();
+      var validateCourse = document.forms["editForm"]["course"].value;
+      validateCourse = validateCourse.trim();
+      var validateGrade = document.forms["editForm"]["studentGrade"].value;
+
+      if (regCheckLetters.test(validateName)) {
+            $('#editName').removeClass('invalid');
+            $('.edit-name-error').empty();
+            $('#editName').addClass('valid');
+            if (regCheckLetterNumber.test(validateCourse)) {
+                  $('#editCourse').removeClass('invalid');
+                  $('.edit-course-error').empty();
+                  $('#editCourse').addClass('valid');
+                  if (regCheckGrade.test(validateGrade)) {
+                        $('#editGrade').removeClass('invalid');
+                        $('#editCourse').removeClass('invalid');
+                        $('#editName').removeClass('invalid');
+                        $('.edit-grade-error').empty();
+                        $('#editGrade').addClass('valid');
+
+                        updateRecord(id);
+                  } else if (validateGrade === "") {
+                        $('.edit-grade-error').empty();
+                        $('#editGrade').addClass('invalid');
+                        $('.edit-grade-error').append('Grade cannot be left blank');
+                        return;
+
+                  } else {
+                        $('.edit-grade-error').empty();
+                        $('#editGrade').addClass('invalid');
+                        $('.edit-grade-error').append('Grade must be a numeric value between 0 - 100');
+                        return;
+
+                  }
+            } else if (validateCourse === "" || validateCourse.trim() === "") {
+                  $('.edit-course-error').empty();
+                  $('#editCourse').addClass('invalid');
+                  $('.edit-course-error').append('Course name required');
+                  return;
+            } else {
+                  $('.edit-course-error').empty();
+                  $('#editCourse').addClass('invalid');
+                  $('.edit-course-error').append('Course Name cannot include any special characters');
+                  return;
+            }
+
+      } else if (validateName.trim() == null || validateName === " " || validateName.trim() === "") {
+            $('.edit-name-error').empty();
+            $('#editName').addClass('invalid');
+            $('.edit-name-error').append('Student Name is required');
+            return;
+      } else {
+            $('.edit-name-error').empty();
+            $('#editName').addClass('invalid');
+            $('.edit-name-error').append('Student Name cannot contain numbers or special characters');
+            return;
+      }
+
+
+}
+
