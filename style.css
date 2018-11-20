@@ -46,3 +46,15 @@
 .center {
     margin-left: 5px;
 }
+
+.title {
+    margin-left: 20px;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+#errorModalTitle, #editModalTitle, #deleteModalTitle {
+    display: inline-block;
+}
