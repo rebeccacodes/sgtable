@@ -298,7 +298,7 @@ function validateForm() {
                   } else {
                         $('.grade-error').empty();
                         $('#studentGrade').addClass('invalid');
-                        $('.grade-error').append('Grade must be a numeric value between 0 - 100');
+                        $('.grade-error').append('Grade must be an integer between 0 - 100');
                         return;
 
                   }
@@ -365,7 +365,7 @@ function validateUpdate(id) {
                   } else {
                         $('.edit-grade-error').empty();
                         $('#editGrade').addClass('invalid');
-                        $('.edit-grade-error').append('Grade must be a numeric value between 0 - 100');
+                        $('.edit-grade-error').append('Grade must be an integer between 0 - 100');
                         return;
 
                   }
